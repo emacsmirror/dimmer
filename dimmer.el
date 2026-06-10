@@ -555,9 +555,18 @@ excluded due to the predicates before should be un-dimmed now."
     (dimmer-process-all)))
 
 (defun dimmer-config-change-handler ()
-  "Process all buffers if window configuration has changed."
+  "Process all buffers if window configuration has changed.
+Skips forced reprocessing when any child frame exists or any
+`dimmer-prevent-dimming-predicate` is active, since those changes
+are typically transient popups rather than user-initiated window changes."
   (dimmer--dbg-buffers 1 "dimmer-config-change-handler")
-  (dimmer-process-all t))
+  (let ((ignore (or (cl-some (lambda (f)
+                               (frame-parameter f 'parent-frame))
+                             (frame-list))
+                    (cl-some (lambda (f) (and (fboundp f) (funcall f)))
+                             dimmer-prevent-dimming-predicates))))
+    (unless ignore
+      (dimmer-process-all t))))
 
 (defun dimmer-after-focus-change-handler ()
   "Handle cases where a frame may have gained or last focus.
