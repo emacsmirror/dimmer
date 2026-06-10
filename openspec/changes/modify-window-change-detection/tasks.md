@@ -5,12 +5,12 @@
 - [x] 1.3 Guard `dimmer-process-all t` behind the combined check, skipping forced reprocess when either signal is active
 - [x] 1.4 Verify the debug message at verbosity 1 still fires before the guard (log the handler entry, not the skip)
 
-## 2. Verify correctness
+## 2. Exclude child frame windows from visible buffer list
 
-- [x] 2.1 Confirm `make lint` passes with no new issues
-- [x] 2.2 Run `make test` to confirm existing tests pass
-- [x] 2.3 Verify no behavioral change when no child frames exist (normal window splits, frame switches)
-- [x] 2.4 Manual check: corfu, company-box, or lsp-ui-doc popup no longer triggers unwanted dimming
+- [x] 2.1 Modify `dimmer-visible-buffer-list` to skip windows whose frame has a non-nil `parent-frame` parameter
+- [x] 2.2 Confirm `make lint` passes with no new issues
+- [x] 2.3 Run `make test` to confirm existing tests pass
+- [ ] 2.4 Manual check: child frame buffers (corfu, company-box, lsp-ui-doc) are no longer dimmed during normal operation
 
 ## 3. Update changelog
 

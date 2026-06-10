@@ -35,3 +35,16 @@ The system SHALL evaluate `dimmer-prevent-dimming-predicates` during `dimmer-con
 - **WHEN** no child frames exist
 - **AND** no prevent-dimming predicates are active
 - **THEN** the system processes the configuration change with `force=t`
+
+### Requirement: Child frame buffers are excluded from visible buffer list
+The system SHALL exclude windows belonging to child frames when building the visible buffer list, so that child frame buffers are never dimmed by dimmer.
+
+#### Scenario: Child frame buffer not in visible set
+- **WHEN** a child frame is visible (e.g., corfu popup, company-box popup)
+- **AND** `dimmer-visible-buffer-list` is called
+- **THEN** the child frame's buffer is not included in the returned list
+- **AND** any normal frame buffers remain in the list
+
+#### Scenario: No child frames present
+- **WHEN** no child frames exist
+- **THEN** `dimmer-visible-buffer-list` returns the same set as before the change

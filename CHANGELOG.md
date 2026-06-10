@@ -13,7 +13,7 @@ refer to the issue number you resolved.
 - Bugfixes
   - Handle `reset` face-attribute gracefully, resolving [#68, #69]
   - Handle faces that error on attribute lookup (e.g. `child-frame-border`), resolving [#53]
-  - Skip forced reprocess on window config changes caused by child frames, resolving [#49, #62, #48, #65, #67]
+  - Skip forced reprocess on child frame window changes and exclude child frame buffers from dimming, resolving [#49, #62, #48, #65, #67]
 - Development and CI improvements
   - Move to GitHub Actions CI
   - Adopt Eask instead of bespoke dev toolchain

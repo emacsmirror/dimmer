@@ -483,13 +483,16 @@ FRAC controls the dimming as defined in ‘dimmer-face-color’."
                  (alist-get 'default face-remapping-alist))))
 
 (defun dimmer-visible-buffer-list ()
-  "Get all visible buffers in all frames."
+  "Get all visible buffers in all frames.
+Excludes windows belonging to child frames, since those are transient
+popups that should not participate in dimming."
   (let (buffers)
     (walk-windows
      (lambda (win)
-       (let ((buf (window-buffer win)))
-         (unless (member buf buffers)   ; ensure items are unique
-           (push buf buffers))))
+       (unless (frame-parameter (window-frame win) 'parent-frame)
+         (let ((buf (window-buffer win)))
+           (unless (member buf buffers)
+             (push buf buffers)))))
      nil
      t)
     (dimmer--dbg 3 "dimmer-visible-buffer-list: %s" buffers)
