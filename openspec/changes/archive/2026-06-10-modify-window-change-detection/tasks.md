@@ -10,7 +10,7 @@
 - [x] 2.1 Modify `dimmer-visible-buffer-list` to skip windows whose frame has a non-nil `parent-frame` parameter
 - [x] 2.2 Confirm `make lint` passes with no new issues
 - [x] 2.3 Run `make test` to confirm existing tests pass
-- [ ] 2.4 Manual check: child frame buffers (corfu, company-box, lsp-ui-doc) are no longer dimmed during normal operation
+- [x] 2.4 Manual check: child frame buffers (corfu, company-box, lsp-ui-doc) are no longer dimmed during normal operation
 
 ## 3. Update changelog
 

@@ -80,6 +80,14 @@ By default dimmer excludes the minibuffer and echo areas from
 consideration, so that most packages that use the minibuffer for
 interaction will behave as users expect.
 
+As of June 2026, dimmer automatically detects child frames and
+excludes them from the dimming process. This means packages like
+corfu, company-box, lsp-ui-doc, eldoc-box, and posframe work correctly
+without additional configuration — child frame popups won't trigger
+unwanted dimming of your editing buffer, and the popup content itself
+renders with full color. Some of the following convenience functions
+may now be redundant.
+
 * `dimmer-configure-company-box` is a convenience function for users
 of company-box.  It prevents dimming the buffer you are editing when a
 company-box popup is displayed.
