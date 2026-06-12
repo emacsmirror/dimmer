@@ -49,6 +49,13 @@
 ;; consideration, so that most packages that use the minibuffer for
 ;; interaction will behave as users expect.
 ;;
+;; As of June 2026, dimmer automatically detects child frames and
+;; excludes them from the dimming process.  Child frame popups (used
+;; by corfu, company-box, lsp-ui-doc, eldoc-box, posframe, and
+;; similar packages) do not trigger unwanted dimming of your editing
+;; buffer, and the child frame content itself renders fully bright.
+;; Some of the following convenience functions may be redundant.
+;;
 ;; `dimmer-configure-company-box' is a convenience function for users
 ;; of company-box.  It prevents dimming the buffer you are editing when
 ;; a company-box popup is displayed.
@@ -483,13 +490,16 @@ FRAC controls the dimming as defined in ‘dimmer-face-color’."
                  (alist-get 'default face-remapping-alist))))
 
 (defun dimmer-visible-buffer-list ()
-  "Get all visible buffers in all frames."
+  "Get all visible buffers in all frames.
+Excludes windows belonging to child frames, since those are transient
+popups that should not participate in dimming."
   (let (buffers)
     (walk-windows
      (lambda (win)
-       (let ((buf (window-buffer win)))
-         (unless (member buf buffers)   ; ensure items are unique
-           (push buf buffers))))
+       (unless (frame-parameter (window-frame win) 'parent-frame)
+         (let ((buf (window-buffer win)))
+           (unless (member buf buffers)
+             (push buf buffers)))))
      nil
      t)
     (dimmer--dbg 3 "dimmer-visible-buffer-list: %s" buffers)
@@ -555,9 +565,18 @@ excluded due to the predicates before should be un-dimmed now."
     (dimmer-process-all)))
 
 (defun dimmer-config-change-handler ()
-  "Process all buffers if window configuration has changed."
+  "Process all buffers if window configuration has changed.
+Skips forced reprocessing when any child frame exists or any
+`dimmer-prevent-dimming-predicate` is active, since those changes
+are typically transient popups rather than user-initiated window changes."
   (dimmer--dbg-buffers 1 "dimmer-config-change-handler")
-  (dimmer-process-all t))
+  (let ((ignore (or (cl-some (lambda (f)
+                               (frame-parameter f 'parent-frame))
+                             (frame-list))
+                    (cl-some (lambda (f) (and (fboundp f) (funcall f)))
+                             dimmer-prevent-dimming-predicates))))
+    (unless ignore
+      (dimmer-process-all t))))
 
 (defun dimmer-after-focus-change-handler ()
   "Handle cases where a frame may have gained or last focus.
