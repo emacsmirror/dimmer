@@ -14,6 +14,7 @@ refer to the issue number you resolved.
   - Handle `reset` face-attribute gracefully, resolving [#68, #69]
   - Handle faces that error on attribute lookup (e.g. `child-frame-border`), resolving [#53]
   - Skip forced reprocess on child frame window changes and exclude child frame buffers from dimming, resolving [#49, #62, #48, #65, #67]
+  - Clear dimmed face cache and reprocess when a theme is enabled, resolving startup initialization bug and [#72]
 - Development and CI improvements
   - Move to GitHub Actions CI
   - Adopt Eask instead of bespoke dev toolchain

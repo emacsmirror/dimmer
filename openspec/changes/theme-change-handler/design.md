@@ -72,7 +72,17 @@ The handler does two things: `(clrhash dimmer-dimmed-faces)` to invalidate stale
 - **Watch `custom-enabled-themes`**: Would catch both enable and disable, but doesn't tell you *which* theme changed. Overly complex.
 - **Advise `load-theme`**: `load-theme` calls `enable-theme` internally, so advising `enable-theme` covers all entry points with a single advice.
 
-### Decision 3: Match the `dimmer-manage-frame-focus-hooks` pattern
+### Decision 3: Clear per-buffer `dimmer-buffer-face-remaps` alongside the cache
+
+`dimmer-dim-buffer` has a guard: `(unless dimmer-buffer-face-remaps ...)` — it only recomputes face remaps if the buffer's remap list is nil. When a theme changes, dimmed buffers still have their old remap lists populated. Without clearing them, `dimmer-process-all` would skip recomputation and the old colors would persist.
+
+The handler iterates all buffers and sets `dimmer-buffer-face-remaps` to nil before calling `dimmer-process-all t`, forcing a full recompute with the new theme's face colors:
+
+```elisp
+(dolist (buf (buffer-list))
+  (with-current-buffer buf
+    (setq dimmer-buffer-face-remaps nil)))
+```
 
 Hook install/remove follows the existing convention: a `dimmer-manage-*-hooks` function called from `dimmer-mode` with an `install` flag. This keeps the setup/teardown logic self-contained and the `dimmer-mode` function linear.
 
