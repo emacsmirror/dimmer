@@ -1,13 +1,13 @@
 ## 1. Add `dimmer-hue-target` defcustom
 
-- [ ] 1.1 Add `dimmer-hue-target` defcustom with type `(choice (const :background) (const :foreground) float)` defaulting to `:background`, with docstring explaining each value
-- [ ] 1.2 Add `dimmer--resolve-hue-target` helper that converts `:background`/`:foreground` to a float hue via `color-rgb-to-hsl` on the `'default` face, or returns the float directly (wrapped via `mod`)
-- [ ] 1.3 Guard `face-background`/`face-foreground` calls with nil check in case of non-graphical frames; fall back to hue 0.0
+- [x] 1.1 Add `dimmer-hue-target` defcustom with type `(choice (const :background) (const :foreground) float)` defaulting to `:background`, with docstring explaining each value
+- [x] 1.2 Add `dimmer--resolve-hue-target` helper that converts `:background`/`:foreground` to a float hue via `color-rgb-to-hsl` on the `'default` face, or returns the float directly (wrapped via `mod`)
+- [x] 1.3 Guard `face-background`/`face-foreground` calls with nil check in case of non-graphical frames; fall back to hue 0.0
 
 ## 2. Add HSL helper functions
 
-- [ ] 2.1 Add `dimmer--gray-of-same-lightness` helper: takes a color string, returns a hex string with same lightness but zero saturation
-- [ ] 2.2 Add `dimmer--color-with-target-hue` helper: takes a color string and target hue float, returns a hex string with same S and L but target hue
+- [x] 2.1 Add `dimmer--gray-of-same-lightness` helper: takes a color string, returns a hex string with same lightness but zero saturation
+- [x] 2.2 Add `dimmer--color-with-target-hue` helper: takes a color string and target hue float, returns a hex string with same S and L but target hue
 
 ## 3. Add `:desaturate` dispatch in `dimmer-face-color`
 
@@ -42,14 +42,14 @@
 
 ## 7. Tests
 
-- [ ] 7.1 Add unit tests for `dimmer--gray-of-same-lightness` in `test/color-math-test.el`
-- [ ] 7.2 Add unit tests for `dimmer--color-with-target-hue` in `test/color-math-test.el`
-- [ ] 7.3 Add unit test for `dimmer--resolve-hue-target` with each value type
+- [x] 7.1 Add unit tests for `dimmer--gray-of-same-lightness` in `test/color-math-test.el`
+- [x] 7.2 Add unit tests for `dimmer--color-with-target-hue` in `test/color-math-test.el`
+- [x] 7.3 Add unit test for `dimmer--resolve-hue-target` with each value type
 - [ ] 7.4 Add graphical ERT test for `:desaturate` mode (verify dimmed result via `face-attribute`)
 - [ ] 7.5 Add graphical ERT test for `:hueshift` mode (verify dimmed result via `face-attribute`)
 
 ## 8. Verify
 
-- [ ] 8.1 Run unit tests (`ert-run-tests-batch-and-exit` for `test/color-math-test.el`)
+- [x] 8.1 Run unit tests (`ert-run-tests-batch-and-exit` for `test/color-math-test.el`)
 - [ ] 8.2 Run graphical tests in an Emacs GUI session
 - [ ] 8.3 Byte-compile `dimmer.el` with no warnings

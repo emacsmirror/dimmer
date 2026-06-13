@@ -217,6 +217,18 @@ wrong, then try HSL or RGB instead."
                 (const :tag "Interpolate in RGB" :rgb))
   :group 'dimmer)
 
+(defcustom dimmer-hue-target :background
+  "Target hue for the `:hueshift' adjustment mode.
+When `dimmer-adjustment-mode' is `:hueshift', dimmed colors are shifted
+toward this hue.  The following values are accepted:
+  `:background'  — use the hue of the `default' face background (default)
+  `:foreground'  — use the hue of the `default' face foreground
+  a float (0.0–1.0) — specifies the hue directly (0.0 = red, 0.5 = cyan)"
+  :type '(choice (const :tag "Use default background hue" :background)
+                 (const :tag "Use default foreground hue" :foreground)
+                 (float :tag "Specific hue (0.0–1.0)"))
+  :group 'dimmer)
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; configuration
 
@@ -416,6 +428,35 @@ FRAC is the dimming amount (0.0-1.0) as passed to `dimmer-face-color'."
                      (dimmer-cached-compute-rgb
                       color target-color frac
                       dimmer-use-colorspace))))))))
+
+(defun dimmer--gray-of-same-lightness (color)
+  "Return a gray (saturation 0) with the same lightness as COLOR."
+  (let* ((rgb (color-name-to-rgb color))
+         (hsl (apply #'color-rgb-to-hsl rgb))
+         (l (nth 2 hsl)))
+    (apply #'color-rgb-to-hex (color-hsl-to-rgb 0.0 0.0 l))))
+
+(defun dimmer--color-with-target-hue (color target-hue)
+  "Return a color with TARGET-HUE and COLOR's saturation and lightness."
+  (let* ((rgb (color-name-to-rgb color))
+         (hsl (apply #'color-rgb-to-hsl rgb))
+         (s (nth 1 hsl))
+         (l (nth 2 hsl))
+         (target (mod target-hue 1.0)))
+    (apply #'color-rgb-to-hex (color-hsl-to-rgb target s l))))
+
+(defun dimmer--resolve-hue-target ()
+  "Return the resolved hue value (0.0–1.0) from `dimmer-hue-target'."
+  (pcase dimmer-hue-target
+    (:background
+     (if-let ((bg (face-background 'default)))
+         (nth 0 (apply #'color-rgb-to-hsl (color-name-to-rgb bg)))
+       0.0))
+    (:foreground
+     (if-let ((fg (face-foreground 'default)))
+         (nth 0 (apply #'color-rgb-to-hsl (color-name-to-rgb fg)))
+       0.0))
+    ((pred floatp) (mod dimmer-hue-target 1.0))))
 
 (defun dimmer-face-color (f frac)
   "Compute a dimmed version of the foreground color of face F.
@@ -643,7 +684,7 @@ when `dimmer-watch-frame-focus-events` is nil."
                        #'dimmer-after-focus-change-handler))))
 
 (defun dimmer-theme-change-handler (&optional theme)
-  "Clear dimmed face cache, clear per-buffer remaps, and reprocess after a theme change.
+  "Clear caches after a theme change.
 THEME is the name of the theme being enabled (symbol)."
   (dimmer--dbg 1 "dimmer-theme-change-handler: theme %s" theme)
   (clrhash dimmer-dimmed-faces)

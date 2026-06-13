@@ -152,4 +152,54 @@
         (b (dimmer-cached-compute-rgb "white" "black" 0.3 :rgb)))
     (should (equal a b))))
 
+;;; dimmer--gray-of-same-lightness
+
+(ert-deftest dimmer--gray-of-same-lightness/red-gives-gray ()
+  (should (equal (dimmer--gray-of-same-lightness "#ff0000")
+                 "#7fff7fff7fff")))
+
+(ert-deftest dimmer--gray-of-same-lightness/black-stays-black ()
+  (should (equal (dimmer--gray-of-same-lightness "#000000")
+                 "#000000000000")))
+
+(ert-deftest dimmer--gray-of-same-lightness/white-stays-white ()
+  (should (equal (dimmer--gray-of-same-lightness "#ffffff")
+                 "#ffffffffffff")))
+
+;;; dimmer--color-with-target-hue
+
+(ert-deftest dimmer--color-with-target-hue/red-to-cyan ()
+  (let ((result (dimmer--color-with-target-hue "#ff0000" 0.5)))
+    (should (stringp result))
+    (should (string-prefix-p "#" result))
+    ;; Green and blue channels should be within rounding of 1.0
+    (should (> (string-to-number (substring result 5 9) 16) 65000))
+    (should (> (string-to-number (substring result 9 13) 16) 65000))))
+
+(ert-deftest dimmer--color-with-target-hue/same-hue-is-identity ()
+  (should (equal (dimmer--color-with-target-hue "#ff0000" 0.0)
+                 "#ffff00000000")))
+
+(ert-deftest dimmer--color-with-target-hue/black-at-any-hue ()
+  (should (equal (dimmer--color-with-target-hue "#000000" 0.3)
+                 "#000000000000")))
+
+(ert-deftest dimmer--color-with-target-hue/white-at-any-hue ()
+  (should (equal (dimmer--color-with-target-hue "#ffffff" 0.7)
+                 "#ffffffffffff")))
+
+;;; dimmer--resolve-hue-target
+
+(ert-deftest dimmer--resolve-hue-target/float-returns-itself ()
+  (let ((dimmer-hue-target 0.3))
+    (should (equal (dimmer--resolve-hue-target) 0.3))))
+
+(ert-deftest dimmer--resolve-hue-target/wraps-via-mod ()
+  (let ((dimmer-hue-target 1.5))
+    (should (equal (dimmer--resolve-hue-target) 0.5))))
+
+(ert-deftest dimmer--resolve-hue-target/negative-wraps ()
+  (let ((dimmer-hue-target -0.5))
+    (should (equal (dimmer--resolve-hue-target) 0.5))))
+
 ;;; color-math-test.el ends here
