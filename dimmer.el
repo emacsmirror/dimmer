@@ -605,6 +605,34 @@ when `dimmer-watch-frame-focus-events` is nil."
       (remove-function after-focus-change-function
                        #'dimmer-after-focus-change-handler))))
 
+(defun dimmer-theme-change-handler (&optional theme)
+  "Clear dimmed face cache, clear per-buffer remaps, and reprocess after a theme change.
+THEME is the name of the theme being enabled (symbol)."
+  (dimmer--dbg 1 "dimmer-theme-change-handler: theme %s" theme)
+  (clrhash dimmer-dimmed-faces)
+  (when dimmer-mode
+    ;; Remove old face remaps and reset per-buffer tracking so
+    ;; dimmer-dim-buffer recomputes with the new theme's face colors
+    ;; instead of skipping (see unless guard).  We must remove the
+    ;; remaps before losing the cookies, otherwise stale entries
+    ;; accumulate in face-remapping-alist and buffers get stuck dimmed.
+    (dolist (buf (buffer-list))
+      (dimmer-restore-buffer buf))
+    (dimmer-process-all t)))
+
+(defun dimmer-manage-theme-hooks (install)
+  "Manage the theme change hooks for dimmer.
+When INSTALL is t, install the hook; otherwise remove it.
+Uses `enable-theme-functions' (Emacs 29+), falls back to
+advising `enable-theme' for Emacs 27-28."
+  (if install
+      (if (boundp 'enable-theme-functions)
+          (add-hook 'enable-theme-functions #'dimmer-theme-change-handler)
+        (advice-add 'enable-theme :after #'dimmer-theme-change-handler))
+    (if (boundp 'enable-theme-functions)
+        (remove-hook 'enable-theme-functions #'dimmer-theme-change-handler)
+      (advice-remove 'enable-theme #'dimmer-theme-change-handler))))
+
 ;;;###autoload
 (define-minor-mode dimmer-mode
   "Visually highlight the selected buffer."
@@ -615,10 +643,12 @@ when `dimmer-watch-frame-focus-events` is nil."
   (if dimmer-mode
       (progn
         (dimmer-manage-frame-focus-hooks t)
+        (dimmer-manage-theme-hooks t)
         (add-hook 'post-command-hook #'dimmer-command-handler)
         (add-hook 'window-configuration-change-hook
                   #'dimmer-config-change-handler))
     (dimmer-manage-frame-focus-hooks nil)
+    (dimmer-manage-theme-hooks nil)
     (remove-hook 'post-command-hook #'dimmer-command-handler)
     (remove-hook 'window-configuration-change-hook
                  #'dimmer-config-change-handler)
