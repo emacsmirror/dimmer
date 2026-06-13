@@ -414,20 +414,39 @@ Each is dimmed using the same color math as the foreground.")
 ATTRIBUTE is a face attribute keyword like :box, :underline, etc.
 Returns the dimmed attribute value suitable for inclusion in a face
 spec, or nil if ATTRIBUTE has no explicit color component.
-FRAC is the dimming amount (0.0-1.0) as passed to `dimmer-face-color'."
-  (let ((value (face-attribute face attribute nil t)))
-    (cond
-     ((stringp value)
-      (when (color-defined-p value)
-        (dimmer-cached-compute-rgb value target-color frac
-                                   dimmer-use-colorspace)))
-     ((and (listp value) (plist-member value :color))
-      (let ((color (plist-get value :color)))
-        (when (and (stringp color) (color-defined-p color))
-          (plist-put (copy-sequence value) :color
-                     (dimmer-cached-compute-rgb
-                      color target-color frac
-                      dimmer-use-colorspace))))))))
+FRAC is the dimming amount (0.0-1.0) as passed to `dimmer-face-color'.
+
+When `dimmer-adjustment-mode' is `:desaturate' or `:hueshift', the
+target is computed per-face from the attribute's own color rather
+than using TARGET-COLOR directly."
+  (let* ((value (face-attribute face attribute nil t))
+         (color (cond
+                 ((stringp value) value)
+                 ((and (listp value) (plist-member value :color))
+                  (plist-get value :color))
+                 (t nil)))
+         (effective-target
+          (pcase dimmer-adjustment-mode
+            (:desaturate
+             (if (and color (color-defined-p color))
+                 (dimmer--gray-of-same-lightness color)
+               target-color))
+            (:hueshift
+             (if (and color (color-defined-p color))
+                 (dimmer--color-with-target-hue
+                  color (dimmer--resolve-hue-target))
+               target-color))
+            (_ target-color))))
+    (when (and color (color-defined-p color))
+      (cond
+       ((stringp value)
+        (dimmer-cached-compute-rgb color effective-target frac
+                                   dimmer-use-colorspace))
+       ((listp value)
+        (plist-put (copy-sequence value) :color
+                   (dimmer-cached-compute-rgb
+                    color effective-target frac
+                    dimmer-use-colorspace)))))))
 
 (defun dimmer--gray-of-same-lightness (color)
   "Return a gray (saturation 0) with the same lightness as COLOR."
@@ -483,34 +502,46 @@ delegate to the foreground color, which is already dimmed."
                       (/ frac 2.0)
                     frac))
          (result '()))
-    ;; We shift the desired components of F by FRAC amount toward the `default`
+    ;; We shift the desired components of F by FRAC amount toward the target
     ;; color, thereby dimming or desaturating the overall appearance:
     ;;   * When the `dimmer-adjustment-mode` is `:foreground` we move the
     ;;     foreground component toward the `default` background.
-    ;;   * When the `dimmer-adjustment-mode` is :background we mofe the
-    ;;     background component of F toward the `default` foreground.`
-    (when (and (or (eq dimmer-adjustment-mode :foreground)
-                   (eq dimmer-adjustment-mode :both))
+    ;;   * When the `dimmer-adjustment-mode` is `:background` we move the
+    ;;     background component toward the `default` foreground.
+    ;;   * When the mode is `:desaturate` we desaturate toward a gray of
+    ;;     the same lightness, preserving luminance.
+    ;;   * When the mode is `:hueshift` we shift toward the configured
+    ;;     target hue, preserving saturation and lightness.
+    (when (and (memq dimmer-adjustment-mode
+                     '(:foreground :both :desaturate :hueshift))
                fg (color-defined-p fg)
                def-bg (color-defined-p def-bg))
-      (setq result
-            (plist-put result :foreground
-                       (dimmer-cached-compute-rgb fg
-                                                  def-bg
-                                                  my-frac
-                                                  dimmer-use-colorspace))))
-    (when (and (or (eq dimmer-adjustment-mode :background)
-                   (eq dimmer-adjustment-mode :both))
+      (let ((target (pcase dimmer-adjustment-mode
+                      (:desaturate (dimmer--gray-of-same-lightness fg))
+                      (:hueshift (dimmer--color-with-target-hue
+                                  fg (dimmer--resolve-hue-target)))
+                      (_ def-bg))))
+        (setq result
+              (plist-put result :foreground
+                         (dimmer-cached-compute-rgb fg target
+                                                    my-frac
+                                                    dimmer-use-colorspace)))))
+    (when (and (memq dimmer-adjustment-mode
+                     '(:background :both :desaturate :hueshift))
                bg (color-defined-p bg)
                def-fg (color-defined-p def-fg))
-      (setq result
-            (plist-put result :background
-                       (dimmer-cached-compute-rgb bg
-                                                  def-fg
-                                                  my-frac
-                                                  dimmer-use-colorspace))))
-    (when (and (or (eq dimmer-adjustment-mode :foreground)
-                   (eq dimmer-adjustment-mode :both))
+      (let ((target (pcase dimmer-adjustment-mode
+                      (:desaturate (dimmer--gray-of-same-lightness bg))
+                      (:hueshift (dimmer--color-with-target-hue
+                                  bg (dimmer--resolve-hue-target)))
+                      (_ def-fg))))
+        (setq result
+              (plist-put result :background
+                         (dimmer-cached-compute-rgb bg target
+                                                    my-frac
+                                                    dimmer-use-colorspace)))))
+    (when (and (memq dimmer-adjustment-mode
+                     '(:foreground :both :desaturate :hueshift))
                def-bg (color-defined-p def-bg))
       (dolist (attr dimmer-color-bearing-attributes)
         (when-let ((dimmed (dimmer--dim-face-attribute f attr def-bg my-frac)))

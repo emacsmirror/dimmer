@@ -11,23 +11,23 @@
 
 ## 3. Add `:desaturate` dispatch in `dimmer-face-color`
 
-- [ ] 3.1 In the foreground dimming block, add `:desaturate` to the `memq` condition that selects which modes process foreground
-- [ ] 3.2 In the background dimming block, add `:desaturate` to the `memq` condition
-- [ ] 3.3 In the decorative attribute loop, add `:desaturate` to the `memq` condition
-- [ ] 3.4 In the foreground dimming branch, compute the desaturate target via `(dimmer--gray-of-same-lightness fg)` and call `dimmer-cached-compute-rgb`
-- [ ] 3.5 In the background dimming branch, compute the desaturate target via `(dimmer--gray-of-same-lightness bg)` similarly
-- [ ] 3.6 In the decorative attribute loop, compute the desaturate target per-attribute
-- [ ] 3.7 Ensure no halving: the `my-frac` binding only halves for `:both`, not for `:desaturate`
+- [x] 3.1 In the foreground dimming block, add `:desaturate` to the `memq` condition that selects which modes process foreground
+- [x] 3.2 In the background dimming block, add `:desaturate` to the `memq` condition
+- [x] 3.3 In the decorative attribute loop, add `:desaturate` to the `memq` condition
+- [x] 3.4 In the foreground dimming branch, compute the desaturate target via `(dimmer--gray-of-same-lightness fg)` and call `dimmer-cached-compute-rgb`
+- [x] 3.5 In the background dimming branch, compute the desaturate target via `(dimmer--gray-of-same-lightness bg)` similarly
+- [x] 3.6 In the decorative attribute loop, compute the desaturate target per-attribute
+- [x] 3.7 Ensure no halving: the `my-frac` binding only halves for `:both`, not for `:desaturate`
 
 ## 4. Add `:hueshift` dispatch in `dimmer-face-color`
 
-- [ ] 4.1 In the foreground dimming block, add `:hueshift` to the `memq` condition
-- [ ] 4.2 In the background dimming block, add `:hueshift` to the `memq` condition
-- [ ] 4.3 In the decorative attribute loop, add `:hueshift` to the `memq` condition
-- [ ] 4.4 In the foreground dimming branch, compute the hue target via `(dimmer--color-with-target-hue fg (dimmer--resolve-hue-target))` and call `dimmer-cached-compute-rgb`
-- [ ] 4.5 In the background dimming branch, compute the hue target similarly
-- [ ] 4.6 In the decorative attribute loop, compute the hue target per-attribute
-- [ ] 4.7 Ensure no halving: same as `:desaturate`
+- [x] 4.1 In the foreground dimming block, add `:hueshift` to the `memq` condition
+- [x] 4.2 In the background dimming block, add `:hueshift` to the `memq` condition
+- [x] 4.3 In the decorative attribute loop, add `:hueshift` to the `memq` condition
+- [x] 4.4 In the foreground dimming branch, compute the hue target via `(dimmer--color-with-target-hue fg (dimmer--resolve-hue-target))` and call `dimmer-cached-compute-rgb`
+- [x] 4.5 In the background dimming branch, compute the hue target similarly
+- [x] 4.6 In the decorative attribute loop, compute the hue target per-attribute
+- [x] 4.7 Ensure no halving: same as `:desaturate`
 
 ## 5. Update defcustom `dimmer-adjustment-mode` type
 
