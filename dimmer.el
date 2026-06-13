@@ -611,11 +611,13 @@ THEME is the name of the theme being enabled (symbol)."
   (dimmer--dbg 1 "dimmer-theme-change-handler: theme %s" theme)
   (clrhash dimmer-dimmed-faces)
   (when dimmer-mode
-    ;; Clear per-buffer remap lists so dimmer-dim-buffer recomputes
-    ;; with the new theme's face colors instead of skipping (see unless guard).
+    ;; Remove old face remaps and reset per-buffer tracking so
+    ;; dimmer-dim-buffer recomputes with the new theme's face colors
+    ;; instead of skipping (see unless guard).  We must remove the
+    ;; remaps before losing the cookies, otherwise stale entries
+    ;; accumulate in face-remapping-alist and buffers get stuck dimmed.
     (dolist (buf (buffer-list))
-      (with-current-buffer buf
-        (setq dimmer-buffer-face-remaps nil)))
+      (dimmer-restore-buffer buf))
     (dimmer-process-all t)))
 
 (defun dimmer-manage-theme-hooks (install)
