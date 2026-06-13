@@ -36,9 +36,9 @@
 
 ## 6. Update Commentary and documentation
 
-- [ ] 6.1 Update `dimmer.el` Commentary section header/doc to mention the two new modes
-- [ ] 6.2 Update CHANGELOG.md with entry for the new modes
-- [ ] 6.3 Update docstring of `dimmer-adjustment-mode` with the new values
+- [x] 6.1 Update `dimmer.el` Commentary section header/doc to mention the two new modes
+- [x] 6.2 Update CHANGELOG.md with entry for the new modes
+- [x] 6.3 Update docstring of `dimmer-adjustment-mode` with the new values
 
 ## 7. Tests
 
@@ -51,5 +51,5 @@
 ## 8. Verify
 
 - [x] 8.1 Run unit tests (`ert-run-tests-batch-and-exit` for `test/color-math-test.el`)
-- [ ] 8.2 Run graphical tests in an Emacs GUI session
-- [ ] 8.3 Byte-compile `dimmer.el` with no warnings
+- [x] 8.2 Run graphical tests in an Emacs GUI session
+- [x] 8.3 Byte-compile `dimmer.el` with no warnings

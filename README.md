@@ -15,7 +15,8 @@ that your overall color scheme is shown in a muted form without
 requiring you to define what is a "dim" version of every face.
 
 `dimmer.el` can be configured to adjust foreground colors (default),
-background colors, or both.
+background colors, both, desaturate colors toward gray (`:desaturate`),
+or shift colors toward a target hue (`:hueshift`).
 
 ## Demo
 
@@ -35,9 +36,10 @@ see a gallery of dimmer effects based on different customizations.
 
 ## Customization
 
-* `dimmer-adjustment-mode` controls what aspect of the color scheme is
-adjusted when dimming.  Choices are `:foreground` (default),
-`:background`, or `:both`. 
+* `dimmer-adjustment-mode` controls how colors ares adjusted when
+dimming.  Choices are `:foreground` (default), `:background`, `:both`,
+`:desaturate` (desaturate toward gray), or `:hueshift` (shift colors
+toward a target hue).
 
 * `dimmer-fraction` controls the degree to which buffers are dimmed.
 Typical range is 0.0 - 1.0, and default is 0.20.  Increase value if
@@ -73,6 +75,22 @@ doesn't have focus.
 dimming calculation is performed in. In the majority of cases you
 won't need to touch this setting. See Troubleshooting below ("dimmed
 colors look wrong") for an example where you might need to set this.
+
+* `dimmer-hue-target` controls the target hue for the `:hueshift`
+adjustment mode.  It accepts `:background` (default, uses the
+`default` face's background hue), `:foreground` (uses the `default`
+face's foreground hue), or a float 0.0–1.0 for a specific hue on the
+color wheel:
+
+ | Value | Hue    |
+ |-------|--------|
+ | 0.00  | Red    |
+ | 0.17  | Yellow |
+ | 0.33  | Green  |
+ | 0.50  | Cyan   |
+ | 0.67  | Blue   |
+ | 0.83  | Magenta|
+ | 1.00  | Red (wraps around) |
 
 ## Configuration
 

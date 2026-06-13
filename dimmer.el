@@ -34,7 +34,8 @@
 ;; every face.
 ;;
 ;; `dimmer.el' can be configured to adjust foreground colors (default),
-;; background colors, or both.
+;; background colors, both, desaturate colors toward gray (`:desaturate`),
+;; or shift colors toward a target hue (`:hueshift`).
 ;;
 ;; Usage:
 ;;
@@ -86,7 +87,9 @@
 ;; Customization:
 ;;
 ;; `dimmer-adjustment-mode' controls what aspect of the color scheme is adjusted
-;; when dimming.  Choices are :foreground (default), :background, or :both.
+;; when dimming.  Choices include :foreground (default), :background, :both,
+;; :desaturate (desaturate toward gray), and :hueshift (shift colors toward a
+;; configurable target hue).  See the defcustom docstring for details.
 ;;
 ;; `dimmer-fraction' controls the degree to which buffers are dimmed.
 ;; Range is 0.0 - 1.0, and default is 0.20.  Increase value if you
@@ -145,7 +148,8 @@
 Choices are:
   `:foreground' (default) — dim foreground colors toward the default background
   `:background' — dim background colors toward the default foreground
-  `:both' — dim both foreground and background (each by half of `dimmer-fraction')
+  `:both' — dim both foreground and background
+    (each by half of `dimmer-fraction')
   `:desaturate' — desaturate all color-bearing face attributes toward gray,
     preserving each attribute's original lightness
   `:hueshift' — shift all color-bearing face attributes toward a target hue,
@@ -237,7 +241,10 @@ When `dimmer-adjustment-mode' is `:hueshift', dimmed colors are shifted
 toward this hue.  The following values are accepted:
   `:background'  — use the hue of the `default' face background (default)
   `:foreground'  — use the hue of the `default' face foreground
-  a float (0.0–1.0) — specifies the hue directly (0.0 = red, 0.5 = cyan)"
+   a float (0.0–1.0) — specifies the hue directly on the color wheel:
+     0.00 = red   0.17 = yellow   0.33 = green
+     0.50 = cyan  0.67 = blue     0.83 = magenta
+     1.00 = red (wraps around)"
   :type '(choice (const :tag "Use default background hue" :background)
                  (const :tag "Use default foreground hue" :foreground)
                  (float :tag "Specific hue (0.0–1.0)"))
