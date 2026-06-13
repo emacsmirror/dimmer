@@ -392,13 +392,44 @@ using the arguments C0, C1, FRAC, and COLORSPACE as the key."
             (puthash key rgb dimmer-dimmed-faces)
             rgb)))))
 
+(defconst dimmer-color-bearing-attributes
+  '(:distant-foreground :box :underline :overline :strike-through)
+  "Face attributes beyond :foreground and :background that carry color.
+Each is dimmed using the same color math as the foreground.")
+
+(defun dimmer--dim-face-attribute (face attribute target-color frac)
+  "Dim the color in FACE's ATTRIBUTE toward TARGET-COLOR.
+ATTRIBUTE is a face attribute keyword like :box, :underline, etc.
+Returns the dimmed attribute value suitable for inclusion in a face
+spec, or nil if ATTRIBUTE has no explicit color component.
+FRAC is the dimming amount (0.0-1.0) as passed to `dimmer-face-color'."
+  (let ((value (face-attribute face attribute nil t)))
+    (cond
+     ((stringp value)
+      (when (color-defined-p value)
+        (dimmer-cached-compute-rgb value target-color frac
+                                   dimmer-use-colorspace)))
+     ((and (listp value) (plist-member value :color))
+      (let ((color (plist-get value :color)))
+        (when (and (stringp color) (color-defined-p color))
+          (plist-put (copy-sequence value) :color
+                     (dimmer-cached-compute-rgb
+                      color target-color frac
+                      dimmer-use-colorspace))))))))
+
 (defun dimmer-face-color (f frac)
   "Compute a dimmed version of the foreground color of face F.
 If `dimmer-adjust-background-color` is true, adjust the
 background color as well.  FRAC is the amount of dimming where
 0.0 is no change and 1.0 is maximum change.  Returns a plist
 containing the new foreground (and if needed, new background)
-suitable for use with `face-remap-add-relative`."
+suitable for use with `face-remap-add-relative`.
+
+All color-bearing face attributes are dimmed using the same color
+math: `:box`, `:underline`, `:overline`, `:strike-through`, and
+`:distant-foreground`.  Attributes without explicit color (t,
+nil, or plists without :color) are left unmodified since they
+delegate to the foreground color, which is already dimmed."
   (let* ((fg-orig (face-foreground f))
          (bg-orig (face-background f))
          ;; since 29.1, face attributes can be the symbol 'reset
@@ -437,6 +468,12 @@ suitable for use with `face-remap-add-relative`."
                                                   def-fg
                                                   my-frac
                                                   dimmer-use-colorspace))))
+    (when (and (or (eq dimmer-adjustment-mode :foreground)
+                   (eq dimmer-adjustment-mode :both))
+               def-bg (color-defined-p def-bg))
+      (dolist (attr dimmer-color-bearing-attributes)
+        (when-let ((dimmed (dimmer--dim-face-attribute f attr def-bg my-frac)))
+          (setq result (plist-put result attr dimmed)))))
     result))
 
 (defun dimmer-filtered-face-list ()

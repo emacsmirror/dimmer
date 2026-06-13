@@ -33,6 +33,9 @@
   (let ((dimmer-adjustment-mode :foreground)
         (dimmer-use-colorspace :rgb))
     (make-face 'dimmer-test-face)
+    (set-face-attribute 'dimmer-test-face nil
+                        :foreground 'unspecified
+                        :background 'unspecified)
     (let ((result (dimmer-face-color 'dimmer-test-face 0.3)))
       (should (listp result))
       (should (not (plist-get result :foreground)))
@@ -95,5 +98,50 @@
     (make-face 'dimmer-test-face)
     (set-face-foreground 'dimmer-test-face 'unspecified)
     (should (equal (dimmer-face-color 'dimmer-test-face 0.3) '()))))
+
+;;; extended face attribute dimming
+
+(ert-deftest dimmer-face-color/dims-box-underline-overline-strikethrough-distant ()
+  (skip-unless (display-graphic-p))
+  (let ((dimmer-adjustment-mode :foreground)
+        (dimmer-use-colorspace :rgb))
+    (make-face 'dimmer-test-extended-face)
+    (set-face-foreground 'dimmer-test-extended-face "#ffffff")
+    (set-face-attribute 'dimmer-test-extended-face nil
+                        :box '(:color "#ff0000" :line-width 2 :style released-button)
+                        :underline '(:color "#00ff00" :style wave)
+                        :overline "#0000ff"
+                        :strike-through "#ff00ff"
+                        :distant-foreground "#888888")
+    (let ((result (dimmer-face-color 'dimmer-test-extended-face 0.3)))
+      (dolist (attr '(:box :underline))
+        (let ((plist-val (plist-get result attr)))
+          (should (listp plist-val))
+          (should (stringp (plist-get plist-val :color)))
+          (should (string-prefix-p "#" (plist-get plist-val :color)))))
+      (dolist (attr '(:overline :strike-through :distant-foreground))
+        (let ((str (plist-get result attr)))
+          (should (stringp str))
+          (should (string-prefix-p "#" str))))
+      (should (not (equal (plist-get result :foreground) "#ffffff"))))))
+
+(ert-deftest dimmer-face-color/box-t-no-explicit-color ()
+  (skip-unless (display-graphic-p))
+  (let ((dimmer-adjustment-mode :foreground)
+        (dimmer-use-colorspace :rgb))
+    (make-face 'dimmer-test-box-t)
+    (set-face-attribute 'dimmer-test-box-t nil :box t)
+    (let ((result (dimmer-face-color 'dimmer-test-box-t 0.3)))
+      (should (not (plist-get result :box))))))
+
+(ert-deftest dimmer-face-color/underline-plist-no-color-key ()
+  (skip-unless (display-graphic-p))
+  (let ((dimmer-adjustment-mode :foreground)
+        (dimmer-use-colorspace :rgb))
+    (make-face 'dimmer-test-underline-no-color)
+    (set-face-attribute 'dimmer-test-underline-no-color nil
+                        :underline '(:style wave))
+    (let ((result (dimmer-face-color 'dimmer-test-underline-no-color 0.3)))
+      (should (not (plist-get result :underline))))))
 
 ;;; graphical-test.el ends here

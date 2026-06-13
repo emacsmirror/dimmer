@@ -9,8 +9,9 @@ refer to the issue number you resolved.
 ## Latest snapshot (on melpa.org)
 
 - Features
-  - Add frog-menu buffer regexps to `dimmer-configure-posframe`
   - Automatically reset dimmer when the theme changes [#72]
+  - Dim face attributes `:box`, `:underline`, `:overline`, `:strike-through`, `:distant-foreground` [#46, #70]
+  - Add frog-menu buffer regexps to `dimmer-configure-posframe`
 - Bugfixes
   - Handle `reset` face-attribute gracefully, resolving [#68, #69]
   - Handle faces that error on attribute lookup (e.g. `child-frame-border`), resolving [#53]
