@@ -142,10 +142,24 @@
 
 (defcustom dimmer-adjustment-mode :foreground
   "Control what aspect of the color scheme is adjusted when dimming.
-Choices are :foreground (default), :background, or :both."
+Choices are:
+  `:foreground' (default) — dim foreground colors toward the default background
+  `:background' — dim background colors toward the default foreground
+  `:both' — dim both foreground and background (each by half of `dimmer-fraction')
+  `:desaturate' — desaturate all color-bearing face attributes toward gray,
+    preserving each attribute's original lightness
+  `:hueshift' — shift all color-bearing face attributes toward a target hue,
+    preserving each attribute's original saturation and lightness.
+
+The `:desaturate' and `:hueshift' modes operate on all color-bearing
+face attributes (foreground, background, box, underline, overline,
+strike-through, distant-foreground) without halving the dimming
+fraction."
   :type '(radio (const :tag "Foreground colors are dimmed" :foreground)
                 (const :tag "Background colors are dimmed" :background)
-                (const :tag "Foreground and background are dimmed" :both))
+                (const :tag "Foreground and background are dimmed" :both)
+                (const :tag "Desaturate toward gray" :desaturate)
+                (const :tag "Shift toward target hue" :hueshift))
   :group 'dimmer)
 
 (make-obsolete-variable

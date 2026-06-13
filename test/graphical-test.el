@@ -144,4 +144,68 @@
     (let ((result (dimmer-face-color 'dimmer-test-underline-no-color 0.3)))
       (should (not (plist-get result :underline))))))
 
+;;; desaturate mode
+
+(ert-deftest dimmer-face-color/desaturate-returns-hex ()
+  (skip-unless (display-graphic-p))
+  (let ((dimmer-adjustment-mode :desaturate)
+        (dimmer-use-colorspace :rgb))
+    (make-face 'dimmer-test-desaturate)
+    (set-face-foreground 'dimmer-test-desaturate "#ff0000")
+    (set-face-background 'dimmer-test-desaturate "#0000ff")
+    (let ((result (dimmer-face-color 'dimmer-test-desaturate 0.3)))
+      (should (stringp (plist-get result :foreground)))
+      (should (stringp (plist-get result :background)))
+      (should (string-prefix-p "#" (plist-get result :foreground)))
+      (should (string-prefix-p "#" (plist-get result :background))))))
+
+(ert-deftest dimmer-face-color/desaturate-all-attributes ()
+  (skip-unless (display-graphic-p))
+  (let ((dimmer-adjustment-mode :desaturate)
+        (dimmer-use-colorspace :rgb))
+    (make-face 'dimmer-test-desaturate-all)
+    (set-face-foreground 'dimmer-test-desaturate-all "#ffffff")
+    (set-face-attribute 'dimmer-test-desaturate-all nil
+                        :box '(:color "#ff0000" :line-width 1)
+                        :underline '(:color "#00ff00" :style wave))
+    (let ((result (dimmer-face-color 'dimmer-test-desaturate-all 0.5)))
+      (should (stringp (plist-get result :foreground)))
+      (should (listp (plist-get result :box)))
+      (should (stringp (plist-get (plist-get result :box) :color)))
+      (should (listp (plist-get result :underline)))
+      (should (stringp (plist-get (plist-get result :underline) :color))))))
+
+;;; hueshift mode
+
+(ert-deftest dimmer-face-color/hueshift-returns-hex ()
+  (skip-unless (display-graphic-p))
+  (let ((dimmer-adjustment-mode :hueshift)
+        (dimmer-hue-target 0.5)
+        (dimmer-use-colorspace :rgb))
+    (make-face 'dimmer-test-hueshift)
+    (set-face-foreground 'dimmer-test-hueshift "#ff0000")
+    (set-face-background 'dimmer-test-hueshift "#0000ff")
+    (let ((result (dimmer-face-color 'dimmer-test-hueshift 0.3)))
+      (should (stringp (plist-get result :foreground)))
+      (should (stringp (plist-get result :background)))
+      (should (string-prefix-p "#" (plist-get result :foreground)))
+      (should (string-prefix-p "#" (plist-get result :background))))))
+
+(ert-deftest dimmer-face-color/hueshift-all-attributes ()
+  (skip-unless (display-graphic-p))
+  (let ((dimmer-adjustment-mode :hueshift)
+        (dimmer-hue-target 0.5)
+        (dimmer-use-colorspace :rgb))
+    (make-face 'dimmer-test-hueshift-all)
+    (set-face-foreground 'dimmer-test-hueshift-all "#ffffff")
+    (set-face-attribute 'dimmer-test-hueshift-all nil
+                        :box '(:color "#ff0000" :line-width 1)
+                        :underline '(:color "#00ff00" :style wave))
+    (let ((result (dimmer-face-color 'dimmer-test-hueshift-all 0.5)))
+      (should (stringp (plist-get result :foreground)))
+      (should (listp (plist-get result :box)))
+      (should (stringp (plist-get (plist-get result :box) :color)))
+      (should (listp (plist-get result :underline)))
+      (should (stringp (plist-get (plist-get result :underline) :color))))))
+
 ;;; graphical-test.el ends here

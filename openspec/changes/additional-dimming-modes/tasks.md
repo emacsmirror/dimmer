@@ -31,8 +31,8 @@
 
 ## 5. Update defcustom `dimmer-adjustment-mode` type
 
-- [ ] 5.1 Add `:desaturate` and `:hueshift` to the `(choice (const :foreground) (const :background) (const :both) (const :desaturate) (const :hueshift))` type spec
-- [ ] 5.2 Update the docstring to describe the two new modes, including the effect on all color-bearing attributes and the no-halving behavior
+- [x] 5.1 Add `:desaturate` and `:hueshift` to the `(choice (const :foreground) (const :background) (const :both) (const :desaturate) (const :hueshift))` type spec
+- [x] 5.2 Update the docstring to describe the two new modes, including the effect on all color-bearing attributes and the no-halving behavior
 
 ## 6. Update Commentary and documentation
 
@@ -45,8 +45,8 @@
 - [x] 7.1 Add unit tests for `dimmer--gray-of-same-lightness` in `test/color-math-test.el`
 - [x] 7.2 Add unit tests for `dimmer--color-with-target-hue` in `test/color-math-test.el`
 - [x] 7.3 Add unit test for `dimmer--resolve-hue-target` with each value type
-- [ ] 7.4 Add graphical ERT test for `:desaturate` mode (verify dimmed result via `face-attribute`)
-- [ ] 7.5 Add graphical ERT test for `:hueshift` mode (verify dimmed result via `face-attribute`)
+- [x] 7.4 Add graphical ERT test for `:desaturate` mode (verify dimmed result via `face-attribute`)
+- [x] 7.5 Add graphical ERT test for `:hueshift` mode (verify dimmed result via `face-attribute`)
 
 ## 8. Verify
 
