@@ -13,6 +13,5 @@
 (development
  (depends-on "elisp-lint")
  (depends-on "zenburn-theme")
- (depends-on "ef-themes")
  (depends-on "doom-themes")
  (depends-on "catppuccin-theme"))

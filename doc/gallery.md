@@ -9,7 +9,7 @@ The examples use these themes:
 * Catppuccin Latte: light pastel theme with a distinct warm background hue.
 * Doom One: saturated dark theme with cool accents.
 * Doom Molokai: saturated high-contrast theme with vivid warm accents.
-* Ef Light: light theme with softer, earth-toned colors.
+* Doom Gruvbox Light: light earth-toned theme with warm backgrounds.
 * Zenburn: muted neutral gray theme.
 
 ## Foreground
@@ -24,7 +24,7 @@ subtle inactive-window effect.
 
 ![Doom Molokai foreground](example-doom-molokai-foreground-comp.png)
 
-![Ef Light foreground](example-ef-light-foreground-comp.png)
+![Doom Gruvbox Light foreground](example-doom-gruvbox-light-foreground-comp.png)
 
 ![Zenburn foreground](example-zenburn-foreground-comp.png)
 
@@ -40,7 +40,7 @@ mode, especially in themes with expressive background colors.
 
 ![Doom Molokai background](example-doom-molokai-background-comp.png)
 
-![Ef Light background](example-ef-light-background-comp.png)
+![Doom Gruvbox Light background](example-doom-gruvbox-light-background-comp.png)
 
 ![Zenburn background](example-zenburn-background-comp.png)
 
@@ -55,7 +55,7 @@ is split between the two directions so the combined effect remains controlled.
 
 ![Doom Molokai both](example-doom-molokai-both-comp.png)
 
-![Ef Light both](example-ef-light-both-comp.png)
+![Doom Gruvbox Light both](example-doom-gruvbox-light-both-comp.png)
 
 ![Zenburn both](example-zenburn-both-comp.png)
 
@@ -71,7 +71,7 @@ less chromatic.
 
 ![Doom Molokai desaturate](example-doom-molokai-desaturate-comp.png)
 
-![Ef Light desaturate](example-ef-light-desaturate-comp.png)
+![Doom Gruvbox Light desaturate](example-doom-gruvbox-light-desaturate-comp.png)
 
 ![Zenburn desaturate](example-zenburn-desaturate-comp.png)
 
@@ -87,6 +87,6 @@ the default target hue from the theme background.
 
 ![Doom Molokai hueshift](example-doom-molokai-hueshift-comp.png)
 
-![Ef Light hueshift](example-ef-light-hueshift-comp.png)
+![Doom Gruvbox Light hueshift](example-doom-gruvbox-light-hueshift-comp.png)
 
 ![Zenburn hueshift](example-zenburn-hueshift-comp.png)

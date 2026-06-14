@@ -33,7 +33,7 @@ gifs: $(GIFS)
 GALLERY_THEMES  = catppuccin-latte \
                   doom-one \
                   doom-molokai \
-                  ef-light \
+                  doom-gruvbox-light \
                   zenburn
 GALLERY_MODES   = foreground desaturate hueshift background both
 GALLERY_FRACS   = 0.00 0.20 0.40 0.50 0.75 0.90
