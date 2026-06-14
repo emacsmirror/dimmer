@@ -11,6 +11,7 @@ refer to the issue number you resolved.
 - Features
   - Automatically reset dimmer when the theme changes [#72]
   - Dim face attributes `:box`, `:underline`, `:overline`, `:strike-through`, `:distant-foreground` [#46, #70]
+  - Add `:desaturate` and `:hueshift` dimming modes, plus `dimmer-hue-target` defcustom [#42]
   - Add frog-menu buffer regexps to `dimmer-configure-posframe`
 - Bugfixes
   - Handle `reset` face-attribute gracefully, resolving [#68, #69]

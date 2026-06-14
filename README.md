@@ -15,7 +15,8 @@ that your overall color scheme is shown in a muted form without
 requiring you to define what is a "dim" version of every face.
 
 `dimmer.el` can be configured to adjust foreground colors (default),
-background colors, or both.
+background colors, both, desaturate colors toward gray (`:desaturate`),
+or shift colors toward a target hue (`:hueshift`).
 
 ## Demo
 
@@ -23,8 +24,8 @@ background colors, or both.
 
 (click thumbnail for higher quality)
 
-Go [here](https://gonewest818.github.io/2020/03/dimmer-gallery/) to
-see a gallery of dimmer effects based on different customizations.
+See the [gallery](doc/gallery.md) for examples of dimmer effects across
+representative themes and adjustment modes.
 
 ## Usage Example
 
@@ -35,9 +36,10 @@ see a gallery of dimmer effects based on different customizations.
 
 ## Customization
 
-* `dimmer-adjustment-mode` controls what aspect of the color scheme is
-adjusted when dimming.  Choices are `:foreground` (default),
-`:background`, or `:both`. 
+* `dimmer-adjustment-mode` controls how colors ares adjusted when
+dimming.  Choices are `:foreground` (default), `:background`, `:both`,
+`:desaturate` (desaturate toward gray), or `:hueshift` (shift colors
+toward a target hue).
 
 * `dimmer-fraction` controls the degree to which buffers are dimmed.
 Typical range is 0.0 - 1.0, and default is 0.20.  Increase value if
@@ -73,6 +75,22 @@ doesn't have focus.
 dimming calculation is performed in. In the majority of cases you
 won't need to touch this setting. See Troubleshooting below ("dimmed
 colors look wrong") for an example where you might need to set this.
+
+* `dimmer-hue-target` controls the target hue for the `:hueshift`
+adjustment mode.  It accepts `:background` (default, uses the
+`default` face's background hue), `:foreground` (uses the `default`
+face's foreground hue), or a float 0.0–1.0 for a specific hue on the
+color wheel:
+
+ | Value | Hue    |
+ |-------|--------|
+ | 0.00  | Red    |
+ | 0.17  | Yellow |
+ | 0.33  | Green  |
+ | 0.50  | Cyan   |
+ | 0.67  | Blue   |
+ | 0.83  | Magenta|
+ | 1.00  | Red (wraps around) |
 
 ## Configuration
 
@@ -114,21 +132,6 @@ users to ensure posframe buffers are not dimmed.
 users to ensure which-key popups are not dimmed.
 
 Please submit pull requests with configurations for other packages!
-
-## Development
-
-This project now uses Eask and GitHub Actions.
-
-Common commands:
-
-* `make lint` runs the lint suite (`eask lint checkdoc`, `eask lint package`, `eask lint declare`, `eask lint indent`, `eask lint elisp-lint`)
-* `make compile` byte-compiles the package
-* `make test` currently aliases `make compile` because there is no test suite yet
-* `make install-deps` installs dev dependencies into `.eask/`
-
-If you prefer, you can run the underlying Eask commands directly.
-
-The CI matrix runs on Emacs 27.2, 28.2, 29.4, 30.2, and snapshot.
 
 ## How colors are adjusted
 
@@ -198,6 +201,29 @@ to see the effect. I may someday increase the default.
 Try customizing `dimmer-use-colorspace` and choose RGB
 instead. Customize this variable and read the documentation in the
 customization screens for more background on this issue.
+
+## Development
+
+This project uses Eask for Emacs Lisp dependency management, linting,
+byte-compilation, and tests. Development dependencies are installed into the
+repo-local `.eask/` sandbox.
+
+Common commands:
+
+* `make deps` installs development dependencies into `.eask/`.
+* `make lint` runs the lint suite.
+* `make compile` byte-compiles the package.
+* `make test` runs the ERT tests in `test/`.
+* `make gallery` generates the screenshot gallery in `doc/`.
+* `make clean` removes generated build artifacts.
+* `make realclean` removes generated artifacts, `.eask/` and `doc/.venv/`.
+
+If you prefer, you can run the underlying Eask commands directly.
+
+The CI matrix runs on Emacs 27.2, 28.2, 29.4, 30.2, and snapshot.
+
+Releases are intentionally lightweight: pushing to `main` updates MELPA, and
+pushing a version tag updates MELPA Stable.
 
 ## License
 
