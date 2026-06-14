@@ -1,3 +1,2 @@
-.custom.el*
-elpa/
+*.log
 *.png

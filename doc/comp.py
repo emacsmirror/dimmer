@@ -1,43 +1,33 @@
 #!/usr/bin/env python
 
-from PIL import Image, ImageFont, ImageDraw
 import sys
 
-im1 = Image.open(sys.argv[1]+"-"+sys.argv[2]+".png")
-im2 = Image.open(sys.argv[1]+"-"+sys.argv[3]+".png")
-im3 = Image.open(sys.argv[1]+"-"+sys.argv[4]+".png")
-im4 = Image.open(sys.argv[1]+"-"+sys.argv[5]+".png")
-im5 = Image.open(sys.argv[1]+"-"+sys.argv[6]+".png")
+from PIL import Image, ImageDraw, ImageFont
 
-f = ImageFont.truetype("~/Library/Fonts/Inconsolata-Regular.ttf", 24)
 
-c0 = im1.crop((0,230,200,630))
-d0 = ImageDraw.Draw(c0)
-d0.text((90,370), "orig", font=f)
-c1 = im1.crop((1280,230,1480,630))
-d1 = ImageDraw.Draw(c1)
-d1.text((90,370), sys.argv[2], font=f)
-c2 = im2.crop((1280,230,1480,630))
-d2 = ImageDraw.Draw(c2)
-d2.text((90,370), sys.argv[3], font=f)
-c3 = im3.crop((1280,230,1480,630))
-d3 = ImageDraw.Draw(c3)
-d3.text((90,370), sys.argv[4], font=f)
-c4 = im4.crop((1280,230,1480,630))
-d4 = ImageDraw.Draw(c4)
-d4.text((90,370), sys.argv[5], font=f)
-c5 = im5.crop((1280,230,1480,630))
-d5 = ImageDraw.Draw(c5)
-d5.text((90,370), sys.argv[6], font=f)
+basename = sys.argv[1]
+fractions = sys.argv[2:]
 
-im = Image.new("RGB", (1200,400))
+if not fractions:
+    raise SystemExit("Usage: comp.py BASENAME FRAC [FRAC ...]")
 
-im.paste(c1, (0,0))
-im.paste(c2, (200,0))
-im.paste(c0, (400,0))
-im.paste(c3, (600,0))
-im.paste(c4, (800,0))
-im.paste(c5, (1000,0))
+font = ImageFont.truetype("~/Library/Fonts/Inconsolata-Regular.ttf", 24)
+swatch_width = 200
+swatch_height = 400
+content_crop = (0, 230, 200, 630)
 
-im.save(sys.argv[1]+"-comp.png")
+images = [Image.open(f"{basename}-{frac}.png") for frac in fractions]
+swatches = []
 
+for image, fraction in zip(images, fractions):
+    swatch = image.crop(content_crop)
+    label = "orig" if fraction == "0.00" else fraction
+    ImageDraw.Draw(swatch).text((90, 370), label, font=font)
+    swatches.append(swatch)
+
+composite = Image.new("RGB", (swatch_width * len(swatches), swatch_height))
+
+for index, swatch in enumerate(swatches):
+    composite.paste(swatch, (swatch_width * index, 0))
+
+composite.save(f"{basename}-comp.png")
