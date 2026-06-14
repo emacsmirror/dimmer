@@ -133,21 +133,6 @@ users to ensure which-key popups are not dimmed.
 
 Please submit pull requests with configurations for other packages!
 
-## Development
-
-This project now uses Eask and GitHub Actions.
-
-Common commands:
-
-* `make lint` runs the lint suite (`eask lint checkdoc`, `eask lint package`, `eask lint declare`, `eask lint indent`, `eask lint elisp-lint`)
-* `make compile` byte-compiles the package
-* `make test` currently aliases `make compile` because there is no test suite yet
-* `make install-deps` installs dev dependencies into `.eask/`
-
-If you prefer, you can run the underlying Eask commands directly.
-
-The CI matrix runs on Emacs 27.2, 28.2, 29.4, 30.2, and snapshot.
-
 ## How colors are adjusted
 
 This package chooses a "dimmed" version of the foreground (and/or the
@@ -216,6 +201,29 @@ to see the effect. I may someday increase the default.
 Try customizing `dimmer-use-colorspace` and choose RGB
 instead. Customize this variable and read the documentation in the
 customization screens for more background on this issue.
+
+## Development
+
+This project uses Eask for Emacs Lisp dependency management, linting,
+byte-compilation, and tests. Development dependencies are installed into the
+repo-local `.eask/` sandbox.
+
+Common commands:
+
+* `make deps` installs development dependencies into `.eask/`.
+* `make lint` runs the lint suite.
+* `make compile` byte-compiles the package.
+* `make test` runs the ERT tests in `test/`.
+* `make gallery` generates the screenshot gallery in `doc/`.
+* `make clean` removes generated build artifacts.
+* `make realclean` removes generated artifacts, `.eask/` and `doc/.venv/`.
+
+If you prefer, you can run the underlying Eask commands directly.
+
+The CI matrix runs on Emacs 27.2, 28.2, 29.4, 30.2, and snapshot.
+
+Releases are intentionally lightweight: pushing to `main` updates MELPA, and
+pushing a version tag updates MELPA Stable.
 
 ## License
 
