@@ -24,8 +24,8 @@ or shift colors toward a target hue (`:hueshift`).
 
 (click thumbnail for higher quality)
 
-Go [here](https://gonewest818.github.io/2020/03/dimmer-gallery/) to
-see a gallery of dimmer effects based on different customizations.
+See the [gallery](doc/gallery.md) for examples of dimmer effects across
+representative themes and adjustment modes.
 
 ## Usage Example
 
