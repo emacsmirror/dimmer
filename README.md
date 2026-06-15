@@ -65,6 +65,11 @@ value, dimming state will not be changed. (Note, this variable replaces
 `dimmer-exclusion-predicates` which was introduced in snapshots prior
 to release 0.4.0 of this package.)
 
+* `dimmer-reprocess-tainted-buffers` controls whether dimmer continues
+processing buffers that have been marked tainted after a partial
+face-remap restore failure.  When nil, tainted buffers are skipped
+until the user explicitly clears the taint state.
+
 * `dimmer-watch-frame-focus-events` controls whether dimmer will dim all
 buffers when Emacs no longer has focus in the windowing system. This
 is enabled by default. Some users may prefer to set this to nil, and

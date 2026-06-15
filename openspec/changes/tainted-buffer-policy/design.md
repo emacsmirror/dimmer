@@ -15,7 +15,6 @@ This keeps the recovery policy explicit and user-configurable, while preserving 
 - Remove as many valid remaps as possible when restore encounters stale cookies
 - Record partial desync in a buffer-local flag
 - Let users decide whether tainted buffers continue to be processed
-- Provide an explicit buffer-local ignore override
 
 **Non-Goals:**
 - Perfect ownership tracking for remap entries
@@ -39,14 +38,9 @@ If any removal fails, the buffer is marked with `dimmer-buffer-tainted`. This fl
 - If non-nil, dimmer continues to process tainted buffers and attempts to recover on future passes.
 - If nil, tainted buffers are skipped until the user clears the state.
 
-### Decision 4: Manual ignore override
-
-Provide commands to set or clear an explicit “ignore this buffer” flag. This gives the user a direct escape hatch for buffers that remain problematic even after best-effort recovery.
-
 ## State Model
 
 - **clean**: normal buffer; dimmer processes it as usual
 - **tainted**: a partial restore failure occurred; policy decides whether the buffer is processed again
-- **ignored**: user override; dimmer skips the buffer regardless of taint state
 
-The taint flag is descriptive; the config option and ignore override are the policy controls.
+The taint flag is descriptive; `dimmer-reprocess-tainted-buffers` is the policy control.
