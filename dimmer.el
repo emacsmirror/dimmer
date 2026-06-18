@@ -109,6 +109,10 @@
 ;; dimming to change.  If any function in this list returns a non-nil
 ;; value, dimming state will not be changed.
 ;;
+;; `dimmer-reprocess-tainted-buffers' controls whether dimmer continues
+;; processing buffers marked tainted after a partial face-remap restore
+;; failure.
+;;
 ;; `dimmer-watch-frame-focus-events' controls whether dimmer will dim all
 ;; buffers when Emacs no longer has focus in the windowing system.  This
 ;; is enabled by default.  Some users may prefer to set this to nil, and
@@ -199,6 +203,15 @@ Functions in this list are called in turn with no arguments.  If any function
 returns a non-nil value, no buffers will be added to or removed from the set
 of dimmed buffers."
   :type '(repeat (choice function))
+  :group 'dimmer)
+
+(defcustom dimmer-reprocess-tainted-buffers t
+  "Non-nil means dimmer continues processing buffers marked tainted.
+
+When a restore/remap operation partially fails, dimmer marks the
+buffer tainted.  If this option is nil, tainted buffers are skipped
+until the user explicitly clears the condition."
+  :type '(boolean)
   :group 'dimmer)
 
 (defcustom dimmer-watch-frame-focus-events t
@@ -334,6 +347,8 @@ uses a buffer name that fits this pattern."
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; implementation
 
+(defvar dimmer-mode)                    ; forward declaration
+
 (defvar dimmer-last-buffer nil
   "Identity of the last buffer to be made current.")
 
@@ -346,6 +361,11 @@ integer for more verbosity.")
   "Per-buffer face remappings needed for later clean up.")
 ;; don't allow major mode change to kill the local variable
 (put 'dimmer-buffer-face-remaps 'permanent-local t)
+
+(defvar-local dimmer-buffer-tainted nil
+  "Non-nil if the buffer has encountered a partial face-remap restore failure.")
+;; don't allow major mode change to kill the local variable
+(put 'dimmer-buffer-tainted 'permanent-local t)
 
 (defconst dimmer-dimmed-faces (make-hash-table :test 'equal)
   "Cache of face names with their computed dimmed values.")
@@ -612,7 +632,17 @@ FRAC controls the dimming as defined in ‘dimmer-face-color’."
     (dimmer--dbg 2 "dimmer-buffer-face-remaps: %s"
                  (alist-get 'default dimmer-buffer-face-remaps))
     (when dimmer-buffer-face-remaps
-      (mapc 'face-remap-remove-relative dimmer-buffer-face-remaps)
+      (let ((tainted nil))
+        (dolist (cookie dimmer-buffer-face-remaps)
+          (condition-case err
+              (face-remap-remove-relative cookie)
+            (error
+             (setq tainted t)
+             (dimmer--dbg 1
+                          "dimmer-restore-buffer: ignoring remap error in %s: %s"
+                          buf err))))
+        (when tainted
+          (setq dimmer-buffer-tainted t)))
       (setq dimmer-buffer-face-remaps nil))
     (dimmer--dbg 2 "dimmer-buffer-face-remaps: %s"
                  (alist-get 'default dimmer-buffer-face-remaps))
@@ -642,10 +672,14 @@ If BUFFER-LIST is provided by the caller, then filter that list."
          (seq-filter
           (lambda (buf)
             ;; This filter function REMOVES any buffer if:
-            ;;    (a) one of the dimmer-buffer-exclusion-regexps matches
-            ;; OR (b) one of the dimmer-buffer-exclusion-predicates is true
+            ;;    (a) the buffer is tainted and reprocessing is disabled
+            ;; OR (b) one of the dimmer-buffer-exclusion-regexps matches
+            ;; OR (c) one of the dimmer-buffer-exclusion-predicates is true
             (let ((name (buffer-name buf)))
-              (not (or (cl-some (lambda (rxp) (string-match-p rxp name))
+              (not (or (with-current-buffer buf
+                         (and dimmer-buffer-tainted
+                              (not dimmer-reprocess-tainted-buffers)))
+                       (cl-some (lambda (rxp) (string-match-p rxp name))
                                 dimmer-buffer-exclusion-regexps)
                        (cl-some (lambda (f) (funcall f buf))
                                 dimmer-buffer-exclusion-predicates)))))
